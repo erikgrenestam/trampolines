@@ -54,6 +54,8 @@ Using the building code field in  ```by_all.shp```, I select the subset of land 
 import fiona
 from shapely.geometry import shape, mapping
 
+TARGET_SHP = outFolder+'Lots_all_10000.shp'
+
 maxArea = 10000
              
 source = fiona.open(LOT_SHP, 'r', encoding='iso-8859-1')     
@@ -84,4 +86,42 @@ for pos, poly in enumerate(polygons):
                 if len(minpoly) > 0:
                     print(pt['id'])
                     dest.write(minpoly)
+```
+
+With the relevant properties selected, ```cut_imgs.py``` slices the images to 300 by 300 jpegs (about 75 by 75 meters on the ground). By iterating over the featues in ```TARGET_SHP``` created about, I apply ```gdalwarp``` to the photos with each property outlining the cut. I also set a minimum dimension to discard lots that are too small (30 pixels corresponds to about 7.5 meters):
+
+```python
+import fiona
+from shapely.geometry import shape, box, Point
+from shapely.affinity import rotate
+import os, os.path
+from PIL import Image
+from osgeo import gdal
+
+def toJpeg(im,filename,max_side_dim,outFolder,angle):
+    size = (max_side_dim, max_side_dim)
+    if angle == 0:
+    background = Image.new('RGB', size, (0, 0, 0)) 
+    background.paste(im, (int((size[0] - im.size[0]) / 2), int((size[1] - im.size[1]) / 2)))
+    if background.getbbox():
+        background.save(outFolder+filename+'.jpg', 'JPEG', quality = 95)
+        print("Jpeg exported.")
+        return 1
+    else:
+        print("All black!")
+        return 2
+
+min_side_dim = 30
+max_side_dim = 300
+
+for idx, feat in enumerate(source):
+        with fiona.open(path=inFolder+"tempfile.shp", mode='w', driver=source.driver, schema=source.schema, crs=source.crs) as tempshp:
+            tempshp.write(feat)
+        outtile = gdal.Warp(outFolder+newfile+".tif", SOURCE_GTIFF, format = 'GTiff', cutlineDSName=inFolder+"tempfile.shp",                                         cropToCutline=True)
+        outtile = None
+        im = Image.open(outFolder+newfile+".tif", 'r')
+        w, h = im.size
+        if min(h, w) > min_side_dim and max(h, w) < max_side_dim:
+            r = 0
+            cut = toJpeg(im,newfile,max_side_dim,outFolder,r)
 ```
