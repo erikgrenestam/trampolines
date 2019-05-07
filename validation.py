@@ -19,14 +19,6 @@ import requests
 import scikitplot as skplt
 import matplotlib.pyplot as plt
 
-def standardize(x):
-   size = x.shape[0]
-   for i in range(0,size):
-      #print("in loop")
-      x[i,...] -= np.mean(x[i,...], keepdims=True)
-      x[i,...] /= (np.std(x[i,...], keepdims=True) + K.epsilon())
-   return x
-
 def second_opinion(id,coords,topath):
     GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/staticmap'
 
