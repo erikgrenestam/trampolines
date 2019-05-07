@@ -101,7 +101,7 @@ for idx, (dir) in enumerate(dirs):
 
     for row in errors:
         id_dict = row[0][:36]
-        #second_opinion(id, ay_dict.get(id_dict), topath) 
+        #second_opinion(id_dict, ay_dict.get(id_dict), topath) 
         
 
 y_pred_prob = np.array(y_pred_prob)
