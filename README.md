@@ -50,23 +50,40 @@ BUILDING_SHP = 'by_all.shp'
 LOT_SHP = 'ay_all.shp'
 ```
 
-Using the building code field in  ```by_all.shp```, I select the subset of land parcels that intersect with a single-family home.
+Using the building code field in  ```by_all.shp```, I select the subset of land parcels that intersect with a single-family home:
 
 ```python
 import fiona
 from shapely.geometry import shape, mapping
 
-source = fiona.open(LOT_SHP, 'r', encoding='iso-8859-1')              
-    
-pointSchema =  {'geometry': 'Point',
-                   'properties': {'OBJEKT_ID': 'str'}}
+maxArea = 10000
+             
+source = fiona.open(LOT_SHP, 'r', encoding='iso-8859-1')     
 
-with fiona.open(POINTS_SHP, 'w', driver=source.driver, crs=source.crs, schema=pointSchema) as dest, fiona.open(BUILDING_SHP, encoding='iso-8859-1') as buildings:
-    for feat in buildings:
-        typecode = feat['properties']['ANDAMAL_1']
-        #select typecodes corresponding to singe-family homes
-        if ((typecode == 130) or (typecode == 131) or (typecode == 132)):
-            geom = shape(feat["geometry"])
-            dest.write({'geometry': mapping(geom.centroid), 'properties':{'OBJEKT_ID' : feat['properties']['OBJEKT_ID']}})
-            print(feat['properties']['OBJEKT_ID'])
+polygons = [pol for pol in source]
+points = [pt for pt in fiona.open(POINTS_SHP)]
+    
+idx = index.Index()
+for pos, poly in enumerate(polygons):
+    idx.insert(pos, shape(poly['geometry']).bounds)
+    
+    #iterate through points
+    with fiona.open(TARGET_SHP, 'w', driver=source.driver, crs=source.crs, schema=source.schema) as dest:
+        for i,pt in enumerate(points):
+            point = shape(pt['geometry'])
+            minArea = maxArea
+            minpoly = {}
+            # iterate through spatial index
+            for j in idx.intersection(point.coords[0]):
+                print(point.coords)
+                geom = shape(polygons[j]["geometry"])
+                area = geom.area
+                if point.within(geom) and area < maxArea:
+                    #only write smallest matching property for each point
+                    if area < minArea:
+                        minArea = area
+                        minpoly = polygons[j]
+                if len(minpoly) > 0:
+                    print(pt['id'])
+                    dest.write(minpoly)
 ```
