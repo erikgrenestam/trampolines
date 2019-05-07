@@ -115,14 +115,15 @@ def toJpeg(im,filename,max_side_dim,outFolder,angle):
 min_side_dim = 30
 max_side_dim = 300
 
-for idx, feat in enumerate(source):
-        with fiona.open(path=inFolder+"tempfile.shp", mode='w', driver=source.driver, schema=source.schema, crs=source.crs) as tempshp:
-            tempshp.write(feat)
-        outtile = gdal.Warp(outFolder+newfile+".tif", SOURCE_GTIFF, format = 'GTiff', cutlineDSName=inFolder+"tempfile.shp",                                         cropToCutline=True)
-        outtile = None
-        im = Image.open(outFolder+newfile+".tif", 'r')
-        w, h = im.size
-        if min(h, w) > min_side_dim and max(h, w) < max_side_dim:
-            r = 0
-            cut = toJpeg(im,newfile,max_side_dim,outFolder,r)
+with fiona.open(SOURCE_SHP, 'r') as source:
+    for idx, feat in enumerate(source):
+            with fiona.open(path=inFolder+"tempfile.shp", mode='w', driver=source.driver, schema=source.schema, crs=source.crs) as tempshp:
+                tempshp.write(feat)
+            outtile = gdal.Warp(outFolder+newfile+".tif", SOURCE_GTIFF, format = 'GTiff', cutlineDSName=inFolder+"tempfile.shp",                                         cropToCutline=True)
+            outtile = None
+            im = Image.open(outFolder+newfile+".tif", 'r')
+            w, h = im.size
+            if min(h, w) > min_side_dim and max(h, w) < max_side_dim:
+                r = 0
+                cut = toJpeg(im,newfile,max_side_dim,outFolder,r)
 ```
