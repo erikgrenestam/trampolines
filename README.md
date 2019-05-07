@@ -167,7 +167,7 @@ second_opinion(id_dict, ay_dict.get(id_dict), topath)
 
 Since the Google Maps image is often of higher resolution than my source images, it can facilitate labeling in ambigous cases as shown here:
 
-<img src='images/google_compare.jpg' width=600>  
+<p align="center"><img src='images/google_compare.jpg' width=600>  
 
 
 
@@ -266,7 +266,7 @@ I evaluate final model performance on the test set of manually labeled images (N
     
 ### Visualizing the result
 
-To visualize the prediction, I can overlay the predicted class for each property on the original photo.
+To visualize the prediction, I can overlay the predicted class for each property on the original photo (red = 'No trampoline', blue = 'Trampoline')
 
 <p align="center">
     <img src='images/beamer_step4.png' width=1000>
