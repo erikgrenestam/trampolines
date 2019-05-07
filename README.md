@@ -127,3 +127,86 @@ with fiona.open(SOURCE_SHP, 'r') as source:
                 r = 0
                 cut = toJpeg(im,newfile,max_side_dim,outFolder,r)
 ```
+
+## Training
+
+For training, I use the Keras implementation of Inception ResNet which I instantiate with pre-trained ImageNet weights and a Tensorflow GPU backend. All training is done on an Nvidia GTX1080Ti.
+
+```python
+    
+from keras import Model
+from keras.applications.inception_resnet_v2 import InceptionResNetV2
+from keras.applications.inception_resnet_v2 import preprocess_input
+from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import Callback
+from keras.callbacks import ModelCheckpoint
+from keras.layers.core import Dense
+from keras.layers import Input
+from keras.models import Sequential
+from keras.optimizers import Adam
+
+in_shape = (300,300,3)
+input = Input(shape=in_shape,name = 'image_input')
+
+#parameters
+EPOCHS = 30
+BATCH_SIZE = 32
+LR = 0.001
+DECAY = 0.001
+MOMENTUM = 0.9
+BETA_1 = 0.9
+BETA_2 = 0.999
+EPSILON = 1e-08
+
+#model
+base_model = InceptionResNetV2(include_top=False, weights='imagenet', input_tensor=None, input_shape=in_shape, pooling='avg')
+
+top_model = Sequential()
+top_model.add(Dense(1, input_shape=(base_model.output_shape[1:]), activation='sigmoid'))
+model = Model(inputs=base_model.input, outputs= top_model(base_model.output))
+
+adam = Adam(lr=LR, beta_1=BETA_1, beta_2=BETA_2, epsilon=EPSILON, decay=0.0, amsgrad=False)
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['accuracy'])
+
+model.summary()
+```
+
+I split my training data 80-10-10. To adress the trampoline/no trampoline imbalance I manually oversample the tramploline class to achieve a 50-50 balance for training and validation. I use the ```flow_from_directory``` method and standard augmentation techniques (flip, shift and rotate)
+
+```python
+train_datagen = ImageDataGenerator(
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    vertical_flip=True,
+    rotation_range=90,
+    horizontal_flip=True,
+    samplewise_center=False,
+    samplewise_std_normalization=False,
+    preprocessing_function=preprocess_input
+    )
+
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=img_size,
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+    class_mode='binary')
+```
+
+I also create callback objects for logging and for gradually reducing the learning rate as the validation accuracy stops improving. The ```LrReducer``` class allows the user to set parameters that determine the learning rate reduction and early stopping conditions.
+
+logCallback = EndCallback(timestr)
+lrReduce = LrReducer()
+
+filepath = model_path+"/ResNet-{epoch:02d}-{val_acc:.3f}.h5"  # unique file name that will include the epoch and the validation acc for that epoch
+Checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max') # saves only the best ones
+
+model.fit_generator(
+    train_generator,
+    steps_per_epoch=int(train_size/BATCH_SIZE),
+    epochs=EPOCHS,
+    validation_data=validation_generator,
+    validation_steps=int(val_size/BATCH_SIZE), callbacks=[logCallback, lrReduce, Checkpoint])
+
+model.save_weights("models/{}_weights.h5".format(NAME))
+model.save("models/{}.h5".format(NAME))
