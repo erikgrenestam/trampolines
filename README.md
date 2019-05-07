@@ -27,19 +27,17 @@ img_id = file[0:11]
 img_year = file[12:]
 yeard[picFolder+file+'.tif'] = int(img_year)
 metapath = metaFolder+img_id+'_flygbild_'+img_year+'.json'
-metapath_orto = metaFolder+img_id+'_ortofoto_'+img_year+'.json'
 
-if os.path.isfile(metapath) and os.path.isfile(metapath_orto):
-   with open(metapath) as metafile:    
-      metadata = json.load(metafile)
-      try:
-         img_date = metadata['features'][0]['properties']['tidpunkt'][0:10]
-         img_camera = metadata['features'][0]['properties']['kamera']
-         dest.write({'geometry': mapping(geom), 'properties':{ 'FILENAME' : file, 
-                                                               'ID' : img_id, 
-                                                               'DATE': img_date,
-                                                               'YEAR': img_year,
-                                                               'CAMERA': img_camera}})
+with open(metapath) as metafile:    
+    metadata = json.load(metafile)
+    try:
+        img_date = metadata['features'][0]['properties']['tidpunkt'][0:10]
+        img_camera = metadata['features'][0]['properties']['kamera']
+        dest.write({'geometry': mapping(geom), 'properties':{ 'FILENAME' : file, 
+                                                              'ID' : img_id, 
+                                                              'DATE': img_date,
+                                                              'YEAR': img_year,
+                                                              'CAMERA': img_camera}})
 
 ```
 
