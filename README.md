@@ -165,7 +165,7 @@ second_opinion(id_dict, ay_dict.get(id_dict), topath)
 
 ```
 
-Since the Google Maps image is often of higher resolution than my source images, it can facilitate labeling in ambigous cases as shown below
+Since the Google Maps image is often of higher resolution than my source images, it can facilitate labeling in ambigous cases as shown here:
 
 <img src='images/google_compare.jpg' width=600>  
 
@@ -256,7 +256,8 @@ model.save_weights("models/{}_weights.h5".format(NAME))
 model.save("models/{}.h5".format(NAME))
 ```
 
-##Testing
-I test final model performance on the test set of manually labeled images ()
+## Testing
 
+I test final model performance on the test set of manually labeled images (1,819)
 
+<img src='images/conf_matrix.PNG' width=600>  
