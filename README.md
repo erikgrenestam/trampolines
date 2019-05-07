@@ -259,18 +259,14 @@ model.save("models/{}.h5".format(NAME))
 ## Testing
 
 I evaluate final model performance on the test set of manually labeled images (N = 1,819):
-<p align="center">
-    <img src='images/conf_matrix.PNG' width=800>  
-<\p>
+<p align="center"><img src='images/conf_matrix.PNG' width=800>
     
 <p align="center">
     <img src='images/ROC_curve_v2.png' width=300> <img src='images/PR_curve_v2.png' width=300>   
-<\p>
     
-### Visualize
+### Visualizing the result
 
 To visualize the prediction, I can overlay the predicted class for each property on the original photo.
 
 <p align="center">
-    <img src='images/beamer_step4.png' width=800>
-<\p>
+    <img src='images/beamer_step4.png' width=1000>
