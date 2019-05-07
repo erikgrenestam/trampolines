@@ -195,6 +195,7 @@ train_generator = train_datagen.flow_from_directory(
 
 I also create callback objects for logging and for gradually reducing the learning rate as the validation accuracy stops improving. The ```LrReducer``` class allows the user to set parameters that determine the learning rate reduction and early stopping conditions.
 
+```python
 logCallback = EndCallback(timestr)
 lrReduce = LrReducer()
 
@@ -210,3 +211,4 @@ model.fit_generator(
 
 model.save_weights("models/{}_weights.h5".format(NAME))
 model.save("models/{}.h5".format(NAME))
+```
