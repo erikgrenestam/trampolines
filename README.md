@@ -88,7 +88,9 @@ for pos, poly in enumerate(polygons):
                     dest.write(minpoly)
 ```
 
-With the relevant properties selected, ```cut_imgs.py``` slices the images to 300x300 pixel jpegs (about 75 by 75 meters on the ground). By iterating over the featues in ```TARGET_SHP``` created about, I apply ```gdalwarp``` to the photos with each property outlining the cut. I also set a minimum dimension to discard lots that are too small (30 pixels corresponds to about 7.5 meters). The script also incorporates a simple rotation algorithm that attempts to fit large properties into a 300 by 300 bounding box by rotating them (the ```angel``` argument in the ```toJpeg``` function)
+With the relevant properties selected, ```cut_imgs.py``` slices the images to 300x300 pixel jpegs (about 75 by 75 meters on the ground). By iterating over the featues in ```TARGET_SHP``` created about, I apply ```gdalwarp``` to the photos with each property outlining the cut. 
+
+I also set a minimum dimension to discard lots that are too small (30 pixels corresponds to about 7.5 meters). The script also incorporates a simple rotation algorithm that attempts to fit large properties into a 300 by 300 bounding box by rotating them (the ```angel``` argument in the ```toJpeg``` function)
 
 ```python
 import fiona
@@ -214,7 +216,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics = ['accuracy
 model.summary()
 ```
 
-I split my training data 80-10-10. To adress the trampoline/no trampoline imbalance I manually oversample the tramploline class to achieve a 50-50 balance for training and validation. I use the ```flow_from_directory``` method and standard augmentation techniques (flip, shift and rotate)
+I split my training data 80-10-10. To adress the trampoline/no trampoline imbalance I manually oversample the trampoline class to achieve a 50-50 balance for training and validation. I use the ```flow_from_directory``` method and standard augmentation techniques (flip, shift and rotate)
 
 ```python
 train_datagen = ImageDataGenerator(
@@ -258,7 +260,7 @@ model.save("models/{}.h5".format(NAME))
 
 ## Testing
 
-I evaluate final model performance on the test set of manually labeled images (N = 1,819):
+In ```validation.py```, I evaluate final model performance on the test set of manually labeled images (N = 1,819):
 <p align="center"><img src='images/conf_matrix.PNG' width=800>
     
 <p align="center">
