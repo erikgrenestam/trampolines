@@ -128,6 +128,49 @@ with fiona.open(SOURCE_SHP, 'r') as source:
                 cut = toJpeg(im,newfile,max_side_dim,outFolder,r)
 ```
 
+Using the exported images, I manually label a set of training images (N=22,435). For ambigous cases, I create a script that asks the Google Maps Static API for a reference photo of the same coordinates:
+
+```python
+import pickle
+import time
+import requests
+
+def second_opinion(id,coords,topath):
+    GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/staticmap'
+
+    coords = str(coords[1]) + "," + str(coords[0])
+    
+    params = {
+            'key': API_KEY,
+            'size': '512x512',
+            'maptype': 'satellite',
+            'zoom': '20',
+            'format': 'jpg',
+            'center': coords
+        }
+    response = requests.get(GOOGLE_MAPS_API_URL, params=params)
+    print(response.status_code)
+    time.sleep(1)
+        
+    filepath = topath + '_gmaps.jpg'
+    print(filepath)
+            
+    with open(filepath, 'wb') as f:
+        f.write(response.content)
+
+#pickled dictionary with unique property id and centroid coordinate (WGS84)
+ay_dict = pickle.load(open("ay_point_wgs.p", "rb" ))
+
+second_opinion(id_dict, ay_dict.get(id_dict), topath) 
+
+```
+
+Since the Google Maps image is often of higher resolution than my source images, it can facilitate labeling in ambigous cases as shown below
+
+<img src='images/google_compare.jpg' width=600>  
+
+
+
 ## Training
 
 For training, I use the Keras implementation of Inception ResNet which I instantiate with pre-trained ImageNet weights and a Tensorflow GPU backend. All training is done on an Nvidia GTX1080Ti.
@@ -212,3 +255,8 @@ model.fit_generator(
 model.save_weights("models/{}_weights.h5".format(NAME))
 model.save("models/{}.h5".format(NAME))
 ```
+
+##Testing
+I test final model performance on the test set of manually labeled images ()
+
+
