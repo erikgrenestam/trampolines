@@ -258,6 +258,8 @@ model.save("models/{}.h5".format(NAME))
 
 ## Testing
 
-I test final model performance on the test set of manually labeled images (1,819)
+I evaluate final model performance on the test set of manually labeled images (N = 1,819):
 
-<img src='images/conf_matrix.PNG' width=600>  
+<img src='images/conf_matrix.PNG' width=800>  
+
+<img src='images/ROC_curve_v2.PNG' width=300> <img src='images/PR_curve_v2.PNG' width=300>   
