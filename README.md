@@ -88,7 +88,7 @@ for pos, poly in enumerate(polygons):
                     dest.write(minpoly)
 ```
 
-With the relevant properties selected, ```cut_imgs.py``` slices the images to 300 by 300 jpegs (about 75 by 75 meters on the ground). By iterating over the featues in ```TARGET_SHP``` created about, I apply ```gdalwarp``` to the photos with each property outlining the cut. I also set a minimum dimension to discard lots that are too small (30 pixels corresponds to about 7.5 meters):
+With the relevant properties selected, ```cut_imgs.py``` slices the images to 300x300 pixel jpegs (about 75 by 75 meters on the ground). By iterating over the featues in ```TARGET_SHP``` created about, I apply ```gdalwarp``` to the photos with each property outlining the cut. I also set a minimum dimension to discard lots that are too small (30 pixels corresponds to about 7.5 meters). The script also incorporates a simple rotation algorithm that attempts to fit large properties into a 300 by 300 bounding box by rotating them (the ```angel``` argument in the ```toJpeg``` function)
 
 ```python
 import fiona
