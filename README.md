@@ -262,4 +262,4 @@ I evaluate final model performance on the test set of manually labeled images (N
 
 <img src='images/conf_matrix.PNG' width=800>  
 
-<img src='images/ROC_curve_v2.PNG' width=300> <img src='images/PR_curve_v2.PNG' width=300>   
+<img src='images/ROC_curve_v2.png' width=300> <img src='images/PR_curve_v2.png' width=300>   
