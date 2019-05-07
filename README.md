@@ -1,1 +1,1 @@
-# trampolines
+# Trampoline detection using CNN
