@@ -101,15 +101,16 @@ from osgeo import gdal
 def toJpeg(im,filename,max_side_dim,outFolder,angle):
     size = (max_side_dim, max_side_dim)
     if angle == 0:
-    background = Image.new('RGB', size, (0, 0, 0)) 
-    background.paste(im, (int((size[0] - im.size[0]) / 2), int((size[1] - im.size[1]) / 2)))
-    if background.getbbox():
-        background.save(outFolder+filename+'.jpg', 'JPEG', quality = 95)
-        print("Jpeg exported.")
-        return 1
-    else:
-        print("All black!")
-        return 2
+        background = Image.new('RGB', size, (0, 0, 0)) 
+        background.paste(im, (int((size[0] - im.size[0]) / 2), int((size[1] - im.size[1]) / 2)))
+        if background.getbbox():
+            background.save(outFolder+filename+'.jpg', 'JPEG', quality = 95)
+            print("Jpeg exported.")
+            return 1
+        else:
+            print("All black!")
+            return 2
+     ...
 
 min_side_dim = 30
 max_side_dim = 300
