@@ -241,6 +241,41 @@ train_generator = train_datagen.flow_from_directory(
 I also create callback objects for logging and for gradually reducing the learning rate as the validation accuracy stops improving. The ```LrReducer``` class allows the user to set parameters that determine the learning rate reduction and early stopping conditions.
 
 ```python
+class LrReducer(Callback):
+    def __init__(self, patience=1, reduce_rate=0.5, reduce_nb=6, verbose=1):
+        super(Callback, self).__init__()
+        self.patience = patience
+        self.wait = 0
+        self.best_score = -1.
+        self.reduce_rate = reduce_rate
+        self.current_reduce_nb = 0
+        self.reduce_nb = reduce_nb
+        self.verbose = verbose
+
+    def on_epoch_end(self, epoch, logs={}):
+        current_score = logs.get('val_acc')
+        if current_score > self.best_score:
+            self.best_score = current_score
+            self.wait = 0
+            if self.verbose > 0:
+                print('---current best val accuracy: %.3f' % current_score)
+        else:
+            if self.wait >= self.patience:
+                self.current_reduce_nb += 1
+                if self.current_reduce_nb <= self.reduce_nb:
+                    lr = K.get_value(self.model.optimizer.lr)
+                    #lr = self.model.optimizer.lr.get_value()
+                    K.set_value(self.model.optimizer.lr,lr*self.reduce_rate)
+                    new_lr = K.get_value(self.model.optimizer.lr)
+                    #self.model.optimizer.lr.set_value(lr*self.reduce_rate)
+                    if self.verbose > 0:
+                        print('---LR reduced to: %f' % new_lr)
+                else:
+                    if self.verbose > 0:
+                        print("Epoch %d: early stopping" % (epoch))
+                    self.model.stop_training = True
+            self.wait += 1
+
 logCallback = EndCallback(timestr)
 lrReduce = LrReducer()
 
