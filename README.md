@@ -4,7 +4,7 @@
 
 This repo contains some code used in my research project on neighborhood effects in consumption. You can download a working paper on my personal [website](http://erikgrenestam.se/wp-content/uploads/2019/04/Bouncing-with-the-Joneses-ErikG.pdf).
 
-Trampolines are popular among Swedish families. Due to their size and distinct shape, they can be detected from an aerial photo. To collect data on trampoline ownership, I apply an instance of Inception ResNet to a large set of aerial photos of Swedish neighborhoods taken between 2006 and 2018.
+Trampolines are popular among Swedish families. Thanks to their size and distinct shape, they can be detected in an aerial photo. To collect data on trampoline ownership, I apply an instance of Inception ResNet to a large set of aerial photos of Swedish neighborhoods taken between 2006 and 2018.
 
 ## Image preprocessing
 
